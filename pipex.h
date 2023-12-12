@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:36:19 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/11 19:16:58 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/12 11:11:25 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,6 @@ typedef struct s_data
 	t_bool	here_doc;
 	t_bool	is_valid;
 	char	**cmds;
+	char	**path;
 }			t_data;
 #endif

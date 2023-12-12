@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 15:57:23 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/11/03 13:58:26 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/12 11:23:13 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ char	*ft_strnstr(const char *big, const char *little, size_t len)
 	{
 		save = (char *)(big + i);
 		j = 0;
-		while (big[i] == little[j] && i < len)
+		while (big[i] == little[j] && i < len && i < 5)
 		{
 			j++;
 			i++;

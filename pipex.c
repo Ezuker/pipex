@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:35:49 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/11 23:18:18 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/12 11:53:48 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	init_cmds(t_data *data, char **argv, int argc)
 	int		i;
 	char	**cmds;
 
-	cmds = malloc(sizeof(char *) * argc);
+	cmds = malloc(sizeof(char *) * (argc - 2));
 	if (!cmds)
 		return (0);
 	i = 1;
@@ -47,18 +47,75 @@ int	init_cmds(t_data *data, char **argv, int argc)
 			return (0);
 		i++;
 	}
+	cmds[i - 1] = NULL;
 	data->cmds = cmds;
 	return (1);
 }
 
+char	*ft_addslash(char *s1)
+{
+	char	*result;
+	int		i;
+
+	i = 0;
+	result = malloc(sizeof(char) * (ft_strlen(s1) + 2));
+	while (i < (int)(ft_strlen(s1)))
+	{
+		result[i] = s1[i];
+		i++;
+	}
+	result[i] = '/';
+	result[i + 1] = '\0';
+	return (result);
+}
+
+char	*get_path(char **envp)
+{
+	int		i;
+	char	*path;
+
+	i = 0;
+	while (envp[++i] != NULL)
+	{
+		path = ft_strnstr(envp[i], "PATH=", ft_strlen(envp[i]));
+		if (path)
+			break ;
+		i++;
+	}
+	return (path);
+}
+
 int	check_cmds(t_data *data, char **envp)
 {
+	int		i;
+	char	*path;
+	int		j;
+	t_bool	save;
 
+	path = get_path(envp);
+	data->path = ft_split(path + 5, ':');
+	i = 0;
+	while (data->cmds[i] != NULL)
+	{
+		j = 0;
+		save = false;
+		while (data->path[++j] != NULL)
+		{
+			data->path[j] = ft_addslash(data->path[j]);
+			path = ft_strjoin(data->path[j], ft_split(data->cmds[i], ' ')[0]);
+			if (access(path, F_OK) != -1)
+				save = true;
+			free(path);
+		}
+		i++;
+		if (!save)
+			return (0);
+	}
+	return (1);
 }
 
 void	init_data(t_data *data, char **argv, int argc, char **envp)
 {
-	(void)envp;
 	argv++;
 	if (!ft_strcmp(argv[0], "here_doc"))
 	{
@@ -85,6 +142,7 @@ void	init_data(t_data *data, char **argv, int argc, char **envp)
 		data->is_valid = true;
 	}
 }
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	*data;
