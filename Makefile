@@ -1,5 +1,8 @@
 SRC = \
 	pipex.c \
+	parsing.c \
+	here_doc.c \
+	pipex_utils.c \
 
 OBJ = ${SRC:.c=.o}
 CC = cc

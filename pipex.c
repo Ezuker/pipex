@@ -6,113 +6,11 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:35:49 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/12 11:53:48 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/12 20:41:34 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-int	open_files(t_data *data, char **argv, int argc)
-{
-	int	fd_infile;
-	int	fd_outfile;
-
-	fd_infile = open(argv[0], O_RDONLY, 0777);
-	if (fd_infile == -1)
-		return (0);
-	fd_outfile = open(argv[argc - 2], O_WRONLY | O_TRUNC | O_CREAT, 0777);
-	if (fd_outfile == -1)
-	{
-		close(fd_infile);
-		return (0);
-	}
-	data->fd_infile = fd_infile;
-	data->fd_outfile = fd_outfile;
-	return (1);
-}
-
-int	init_cmds(t_data *data, char **argv, int argc)
-{
-	int		i;
-	char	**cmds;
-
-	cmds = malloc(sizeof(char *) * (argc - 2));
-	if (!cmds)
-		return (0);
-	i = 1;
-	while (i < argc - 2)
-	{
-		cmds[i - 1] = ft_strdup(argv[i]);
-		if (!cmds[i - 1])
-			return (0);
-		i++;
-	}
-	cmds[i - 1] = NULL;
-	data->cmds = cmds;
-	return (1);
-}
-
-char	*ft_addslash(char *s1)
-{
-	char	*result;
-	int		i;
-
-	i = 0;
-	result = malloc(sizeof(char) * (ft_strlen(s1) + 2));
-	while (i < (int)(ft_strlen(s1)))
-	{
-		result[i] = s1[i];
-		i++;
-	}
-	result[i] = '/';
-	result[i + 1] = '\0';
-	return (result);
-}
-
-char	*get_path(char **envp)
-{
-	int		i;
-	char	*path;
-
-	i = 0;
-	while (envp[++i] != NULL)
-	{
-		path = ft_strnstr(envp[i], "PATH=", ft_strlen(envp[i]));
-		if (path)
-			break ;
-		i++;
-	}
-	return (path);
-}
-
-int	check_cmds(t_data *data, char **envp)
-{
-	int		i;
-	char	*path;
-	int		j;
-	t_bool	save;
-
-	path = get_path(envp);
-	data->path = ft_split(path + 5, ':');
-	i = 0;
-	while (data->cmds[i] != NULL)
-	{
-		j = 0;
-		save = false;
-		while (data->path[++j] != NULL)
-		{
-			data->path[j] = ft_addslash(data->path[j]);
-			path = ft_strjoin(data->path[j], ft_split(data->cmds[i], ' ')[0]);
-			if (access(path, F_OK) != -1)
-				save = true;
-			free(path);
-		}
-		i++;
-		if (!save)
-			return (0);
-	}
-	return (1);
-}
 
 void	init_data(t_data *data, char **argv, int argc, char **envp)
 {
@@ -120,27 +18,76 @@ void	init_data(t_data *data, char **argv, int argc, char **envp)
 	if (!ft_strcmp(argv[0], "here_doc"))
 	{
 		data->here_doc = true;
+		//parsing_here_doc(data, argv, argc, envp);
+		data->iteration = 0;
 	}
 	else
 	{
 		data->here_doc = false;
-		if (!open_files(data, argv, argc))
-		{
-			data->is_valid = false;
-			return ;
-		}
-		if (!init_cmds(data, argv, argc))
-		{
-			data->is_valid = false;
-			return ;
-		}
-		if (!check_cmds(data, envp))
-		{
-			data->is_valid = false;
-			return ;
-		}
-		data->is_valid = true;
+		parsing_pipex(data, argv, argc, envp);
+		data->iteration = 0;
 	}
+}
+
+void	free_all(t_data *data)
+{
+	// int	i;
+
+	// i = -1;
+	// while (data->cmds[i++] != NULL)
+	// 	free(data->cmds[i]);
+	// i = -1;
+	// while (data->path[i++] != NULL)
+	// 	free(data->path[i]);
+	close(data->fd_infile);
+	close(data->fd_outfile);
+	free(data);
+}
+
+void	child_process(t_data *data, int end[2])
+{
+	char	**envp;
+
+	envp = NULL;
+	dup2(data->fd_infile, STDIN_FILENO);
+	dup2(end[1], STDOUT_FILENO);
+	close(end[0]);
+	close(data->fd_infile);
+	execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp);
+}
+
+void	parent_process(t_data *data, int end[2])
+{
+	int		status;
+	char	**envp;
+
+	envp = NULL;
+	waitpid(-1, &status, 0);
+	dup2(data->fd_outfile, STDOUT_FILENO);
+	dup2(end[0], STDIN_FILENO);
+	close(end[1]);
+	close(data->fd_outfile);
+	execve(data->cmdspath[data->iteration + 1], data->cmds[data->iteration + 1], envp);
+}
+
+void	exec_pipex(t_data *data)
+{
+	int		end[2];
+	pid_t	fork_id;
+
+	pipe(end);
+	fork_id = fork();
+	if (!fork_id)
+	{
+		printf("child\n");
+		child_process(data, end);
+	}
+	else
+	{
+		printf("parent\n");
+		parent_process(data, end);
+	}
+	data->iteration = data->iteration + 1;
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -151,8 +98,23 @@ int	main(int argc, char **argv, char **envp)
 	if (argc > 4)
 		init_data(data, argv, argc, envp);
 	else
+	{
 		free(data);
+		return (1);
+	}
 	if (data->is_valid == false)
+	{
 		printf("Error\n");
+		free_all(data);
+		return (1);
+	}
+	// if (data->here_doc)
+	// 	exec_here_doc();
+	// else
+	while (data->cmds[data->iteration] != NULL)
+	{
+		exec_pipex(data);
+		printf("iteration\n");
+	}
 	return (0);
 }

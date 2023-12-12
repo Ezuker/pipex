@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:36:19 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/12 11:11:25 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/12 19:16:28 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,12 @@ typedef struct s_data
 	int		fd_outfile;
 	t_bool	here_doc;
 	t_bool	is_valid;
-	char	**cmds;
-	char	**path;
+	char	***cmds;
+	char	**envpath;
+	char	**cmdspath;
+	int		iteration;
 }			t_data;
+
+void	parsing_pipex(t_data *data, char **argv, int argc, char **envp);
+char	*ft_addslash(char *s1);
 #endif
