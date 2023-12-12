@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:35:49 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/12 20:41:34 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/12 23:28:42 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,16 +53,16 @@ void	child_process(t_data *data, int end[2])
 	dup2(end[1], STDOUT_FILENO);
 	close(end[0]);
 	close(data->fd_infile);
+	sleep(3); //test
 	execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp);
 }
 
 void	parent_process(t_data *data, int end[2])
 {
-	int		status;
 	char	**envp;
 
 	envp = NULL;
-	waitpid(-1, &status, 0);
+	wait(NULL);
 	dup2(data->fd_outfile, STDOUT_FILENO);
 	dup2(end[0], STDIN_FILENO);
 	close(end[1]);
