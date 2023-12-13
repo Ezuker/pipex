@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:35:49 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/13 18:35:45 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/13 23:30:21 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,13 +71,9 @@ void	parent_process(int end[2])
 	close(end[1]);
 }
 
-void	parent_process_final(t_data *data, int end[2], char **envp)
+void	parent_process_final(t_data *data, char **envp)
 {
-	wait(NULL);
-	dup2(end[0], STDIN_FILENO);
 	dup2(data->fd_outfile, STDOUT_FILENO);
-	close(end[1]);
-	close(data->fd_outfile);
 	if (execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp) == -1)
 		perror("Error");
 }
@@ -96,24 +92,6 @@ void	exec_pipex(t_data *data, char **envp)
 	else
 	{
 		parent_process(end);
-	}
-	data->iteration = data->iteration + 1;
-}
-
-void	exec_final(t_data *data, char **envp)
-{
-	int		end[2];
-	pid_t	fork_id;
-
-	pipe(end);
-	fork_id = fork();
-	if (!fork_id)
-	{
-		child_process(data, end, envp);
-	}
-	else
-	{
-		parent_process_final(data, end, envp);
 	}
 	data->iteration = data->iteration + 1;
 }
@@ -141,7 +119,11 @@ int	main(int argc, char **argv, char **envp)
 		dup2(data->fd_infile, STDIN_FILENO);
 		while (data->cmds[data->iteration + 1] != NULL)
 			exec_pipex(data, envp);
-		exec_final(data, envp);
+		parent_process_final(data, envp);
+	}
+	else
+	{
+		
 	}
 	free_all(data);
 	return (0);
