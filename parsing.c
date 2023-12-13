@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 15:40:44 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/13 15:54:12 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/13 18:35:57 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,18 @@ static int	open_files(t_data *data, char **argv, int argc)
 
 	fd_infile = open(argv[0], O_RDONLY, 0777);
 	if (fd_infile == -1)
-		return (0);
+	{
+		perror("Error");
+		free(data);
+		exit(2);
+	}
 	fd_outfile = open(argv[argc - 2], O_WRONLY | O_TRUNC | O_CREAT, 0777);
 	if (fd_outfile == -1)
 	{
 		close(fd_infile);
-		return (0);
+		perror("Error");
+		free(data);
+		exit(2);
 	}
 	data->fd_infile = fd_infile;
 	data->fd_outfile = fd_outfile;
@@ -91,6 +97,7 @@ static int	check_cmds(t_data *data, char **envp)
 		}
 		if (access(data->cmdspath[i], F_OK) == -1)
 		{
+			ft_printf("zsh: Command not found\n");
 			return (0);
 		}
 	}
@@ -99,11 +106,7 @@ static int	check_cmds(t_data *data, char **envp)
 
 void	parsing_pipex(t_data *data, char **argv, int argc, char **envp)
 {
-	if (!open_files(data, argv, argc))
-	{
-		data->is_valid = false;
-		return ;
-	}
+	open_files(data, argv, argc);
 	if (!init_cmds(data, argv, argc))
 	{
 		data->is_valid = false;

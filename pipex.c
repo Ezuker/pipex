@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:35:49 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/13 17:01:16 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/13 18:35:45 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,8 @@ void	child_process(t_data *data, int end[2], char **envp)
 {
 	dup2(end[1], STDOUT_FILENO);
 	close(end[0]);
-	execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp);
+	if (execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp) == -1)
+		perror("Error");
 }
 
 void	parent_process(int end[2])
@@ -77,7 +78,8 @@ void	parent_process_final(t_data *data, int end[2], char **envp)
 	dup2(data->fd_outfile, STDOUT_FILENO);
 	close(end[1]);
 	close(data->fd_outfile);
-	execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp);
+	if (execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp) == -1)
+		perror("Error");
 }
 
 void	exec_pipex(t_data *data, char **envp)
@@ -131,7 +133,6 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	if (data->is_valid == false)
 	{
-		printf("Error\n");
 		free_all(data);
 		return (1);
 	}
