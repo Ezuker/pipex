@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:35:49 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/12 23:28:42 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/13 17:01:16 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,46 +31,56 @@ void	init_data(t_data *data, char **argv, int argc, char **envp)
 
 void	free_all(t_data *data)
 {
-	// int	i;
+	int	i;
+	int	j;
 
-	// i = -1;
-	// while (data->cmds[i++] != NULL)
-	// 	free(data->cmds[i]);
-	// i = -1;
-	// while (data->path[i++] != NULL)
-	// 	free(data->path[i]);
-	close(data->fd_infile);
-	close(data->fd_outfile);
+	i = 0;
+	while (data->cmds && data->cmds[i] != NULL)
+	{
+		j = 0;
+		while (data->cmds[i][j] != NULL)
+			free(data->cmds[i][j++]);
+		free(data->cmds[i++]);
+	}
+	free(data->cmds);
+	i = 0;
+	while (data->cmdspath && data->cmdspath[i] != NULL)
+	{
+		free(data->cmdspath[i++]);
+	}
+	free(data->cmdspath);
+	i = 0;
+	while (data->envpath && data->envpath[i])
+		free(data->envpath[i++]);
+	free(data->envpath);
 	free(data);
 }
 
-void	child_process(t_data *data, int end[2])
+void	child_process(t_data *data, int end[2], char **envp)
 {
-	char	**envp;
-
-	envp = NULL;
-	dup2(data->fd_infile, STDIN_FILENO);
 	dup2(end[1], STDOUT_FILENO);
 	close(end[0]);
-	close(data->fd_infile);
-	sleep(3); //test
 	execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp);
 }
 
-void	parent_process(t_data *data, int end[2])
+void	parent_process(int end[2])
 {
-	char	**envp;
-
-	envp = NULL;
 	wait(NULL);
-	dup2(data->fd_outfile, STDOUT_FILENO);
 	dup2(end[0], STDIN_FILENO);
 	close(end[1]);
-	close(data->fd_outfile);
-	execve(data->cmdspath[data->iteration + 1], data->cmds[data->iteration + 1], envp);
 }
 
-void	exec_pipex(t_data *data)
+void	parent_process_final(t_data *data, int end[2], char **envp)
+{
+	wait(NULL);
+	dup2(end[0], STDIN_FILENO);
+	dup2(data->fd_outfile, STDOUT_FILENO);
+	close(end[1]);
+	close(data->fd_outfile);
+	execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp);
+}
+
+void	exec_pipex(t_data *data, char **envp)
 {
 	int		end[2];
 	pid_t	fork_id;
@@ -79,13 +89,29 @@ void	exec_pipex(t_data *data)
 	fork_id = fork();
 	if (!fork_id)
 	{
-		printf("child\n");
-		child_process(data, end);
+		child_process(data, end, envp);
 	}
 	else
 	{
-		printf("parent\n");
-		parent_process(data, end);
+		parent_process(end);
+	}
+	data->iteration = data->iteration + 1;
+}
+
+void	exec_final(t_data *data, char **envp)
+{
+	int		end[2];
+	pid_t	fork_id;
+
+	pipe(end);
+	fork_id = fork();
+	if (!fork_id)
+	{
+		child_process(data, end, envp);
+	}
+	else
+	{
+		parent_process_final(data, end, envp);
 	}
 	data->iteration = data->iteration + 1;
 }
@@ -94,27 +120,28 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_data	*data;
 
-	data = malloc(sizeof(t_data));
 	if (argc > 4)
-		init_data(data, argv, argc, envp);
-	else
 	{
-		free(data);
-		return (1);
+		data = ft_calloc(sizeof(t_data), 1);
+		if (!data)
+			return (1);
+		init_data(data, argv, argc, envp);
 	}
+	else
+		return (1);
 	if (data->is_valid == false)
 	{
 		printf("Error\n");
 		free_all(data);
 		return (1);
 	}
-	// if (data->here_doc)
-	// 	exec_here_doc();
-	// else
-	while (data->cmds[data->iteration] != NULL)
+	if (data->here_doc == false)
 	{
-		exec_pipex(data);
-		printf("iteration\n");
+		dup2(data->fd_infile, STDIN_FILENO);
+		while (data->cmds[data->iteration + 1] != NULL)
+			exec_pipex(data, envp);
+		exec_final(data, envp);
 	}
+	free_all(data);
 	return (0);
 }

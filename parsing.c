@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 15:40:44 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/12 19:23:06 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/13 15:54:12 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,16 @@ static int	open_files(t_data *data, char **argv, int argc)
 static int	init_cmds(t_data *data, char **argv, int argc)
 {
 	int		i;
-	char	**cmdspath;
 
-	data->cmds = malloc(sizeof(char **) * (argc - 2));
-	cmdspath = malloc(sizeof(char *) * (argc - 2));
+	data->cmds = ft_calloc(sizeof(char **), argc - 2);
 	if (!data->cmds)
 		return (0);
+	data->cmdspath = ft_calloc(sizeof(char *), argc - 2);
+	if (!data->cmdspath)
+		return (0);
+	i = 0;
+	while (i < argc - 2)
+		data->cmdspath[i++] = NULL;
 	i = 1;
 	while (i < argc - 2)
 	{
@@ -49,7 +53,6 @@ static int	init_cmds(t_data *data, char **argv, int argc)
 		i++;
 	}
 	data->cmds[i - 1] = NULL;
-	data->cmdspath = cmdspath;
 	return (1);
 }
 
@@ -59,7 +62,7 @@ void	init_path(t_data *data, char **envp)
 	char	*path;
 
 	i = 0;
-	while (envp[++i] != NULL)
+	while (envp[i] != NULL)
 	{
 		path = ft_strnstr(envp[i], "PATH=", ft_strlen(envp[i]));
 		if (path)
@@ -73,7 +76,6 @@ static int	check_cmds(t_data *data, char **envp)
 {
 	int		i;
 	int		j;
-	char	*path;
 
 	init_path(data, envp);
 	i = -1;
@@ -82,14 +84,15 @@ static int	check_cmds(t_data *data, char **envp)
 		j = -1;
 		while (data->envpath[++j] != NULL)
 		{
-			path = ft_addslash(data->envpath[j]);
-			path = ft_strjoin(path, data->cmds[i][0]);
-			if (access(path, F_OK) != -1)
+			data->cmdspath[i] = ft_addslash(data->envpath[j], data->cmdspath[i]);
+			data->cmdspath[i] = ft_strjoin(data->cmdspath[i], data->cmds[i][0]);
+			if (access(data->cmdspath[i], F_OK) != -1)
 				break ;
 		}
-		data->cmdspath[i] = path;
-		if (access(path, F_OK) == -1)
+		if (access(data->cmdspath[i], F_OK) == -1)
+		{
 			return (0);
+		}
 	}
 	return (1);
 }

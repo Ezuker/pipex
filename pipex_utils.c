@@ -6,21 +6,23 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 15:50:31 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/12 18:01:20 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/13 15:51:35 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-char	*ft_addslash(char *s1)
+char	*ft_addslash(char *s1, char *s2)
 {
 	char	*result;
 	int		i;
 
 	if (!s1)
 		return (NULL);
+	if (s2)
+		free(s2);
 	i = 0;
-	result = malloc(sizeof(char) * (ft_strlen(s1) + 2));
+	result = ft_calloc(sizeof(char), (ft_strlen(s1) + 2));
 	while (i < (int)(ft_strlen(s1)))
 	{
 		result[i] = s1[i];
