@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:36:19 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/13 15:25:44 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/13 23:54:19 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,5 @@ typedef struct s_data
 }			t_data;
 
 void	parsing_pipex(t_data *data, char **argv, int argc, char **envp);
-char	*ft_addslash(char *s1, char *s2);
+char	*addslash(char *s1, char *s2);
 #endif

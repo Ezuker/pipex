@@ -6,13 +6,13 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 15:50:31 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/13 15:51:35 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/13 23:54:25 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-char	*ft_addslash(char *s1, char *s2)
+char	*addslash(char *s1, char *s2)
 {
 	char	*result;
 	int		i;

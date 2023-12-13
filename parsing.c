@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 15:40:44 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/13 18:35:57 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/14 00:39:43 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ static int	check_cmds(t_data *data, char **envp)
 		j = -1;
 		while (data->envpath[++j] != NULL)
 		{
-			data->cmdspath[i] = ft_addslash(data->envpath[j], data->cmdspath[i]);
+			data->cmdspath[i] = addslash(data->envpath[j], data->cmdspath[i]);
 			data->cmdspath[i] = ft_strjoin(data->cmdspath[i], data->cmds[i][0]);
 			if (access(data->cmdspath[i], F_OK) != -1)
 				break ;
@@ -98,7 +98,7 @@ static int	check_cmds(t_data *data, char **envp)
 		if (access(data->cmdspath[i], F_OK) == -1)
 		{
 			ft_printf("zsh: Command not found\n");
-			return (0);
+			// return (1);
 		}
 	}
 	return (1);

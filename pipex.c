@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:35:49 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/13 23:30:21 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/14 00:34:45 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,12 +61,14 @@ void	child_process(t_data *data, int end[2], char **envp)
 	dup2(end[1], STDOUT_FILENO);
 	close(end[0]);
 	if (execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp) == -1)
+	{
 		perror("Error");
+	}
 }
 
 void	parent_process(int end[2])
 {
-	wait(NULL);
+	// wait(NULL);
 	dup2(end[0], STDIN_FILENO);
 	close(end[1]);
 }
@@ -104,15 +106,15 @@ int	main(int argc, char **argv, char **envp)
 	{
 		data = ft_calloc(sizeof(t_data), 1);
 		if (!data)
-			return (1);
+			return (2);
 		init_data(data, argv, argc, envp);
 	}
 	else
-		return (1);
+		return (2);
 	if (data->is_valid == false)
 	{
 		free_all(data);
-		return (1);
+		return (2);
 	}
 	if (data->here_doc == false)
 	{
@@ -123,7 +125,7 @@ int	main(int argc, char **argv, char **envp)
 	}
 	else
 	{
-		
+
 	}
 	free_all(data);
 	return (0);
