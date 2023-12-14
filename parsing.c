@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 15:40:44 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/14 00:39:43 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/15 00:51:17 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,11 @@ static int	open_files(t_data *data, char **argv, int argc)
 	int	fd_outfile;
 
 	fd_infile = open(argv[0], O_RDONLY, 0777);
-	if (fd_infile == -1)
-	{
-		perror("Error");
-		free(data);
-		exit(2);
-	}
 	fd_outfile = open(argv[argc - 2], O_WRONLY | O_TRUNC | O_CREAT, 0777);
-	if (fd_outfile == -1)
+	if (fd_outfile == -1 || fd_infile == -1)
 	{
-		close(fd_infile);
+		if (fd_outfile != -1)
+			close(fd_outfile);
 		perror("Error");
 		free(data);
 		exit(2);
@@ -78,12 +73,11 @@ void	init_path(t_data *data, char **envp)
 	data->envpath = ft_split(path + 5, ':');
 }
 
-static int	check_cmds(t_data *data, char **envp)
+void	check_cmds(t_data *data)
 {
 	int		i;
 	int		j;
 
-	init_path(data, envp);
 	i = -1;
 	while (data->cmds[++i] != NULL)
 	{
@@ -94,14 +88,18 @@ static int	check_cmds(t_data *data, char **envp)
 			data->cmdspath[i] = ft_strjoin(data->cmdspath[i], data->cmds[i][0]);
 			if (access(data->cmdspath[i], F_OK) != -1)
 				break ;
+			if (access(data->cmds[i][0], F_OK) != -1)
+			{
+				data->cmdspath[i] = ft_strcpy(data->cmdspath[i], data->cmds[i][0]);
+				break ;
+			}
 		}
 		if (access(data->cmdspath[i], F_OK) == -1)
 		{
 			ft_printf("zsh: Command not found\n");
-			// return (1);
+			data->status_code = 127;
 		}
 	}
-	return (1);
 }
 
 void	parsing_pipex(t_data *data, char **argv, int argc, char **envp)
@@ -112,10 +110,7 @@ void	parsing_pipex(t_data *data, char **argv, int argc, char **envp)
 		data->is_valid = false;
 		return ;
 	}
-	if (!check_cmds(data, envp))
-	{
-		data->is_valid = false;
-		return ;
-	}
+	init_path(data, envp);
+	check_cmds(data);
 	data->is_valid = true;
 }

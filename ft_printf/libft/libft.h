@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 14:12:28 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/13 14:46:04 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/14 21:31:35 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdlib.h>
 
 int				ft_strcmp(char *s1, char *s2);
+char			*ft_strcpy(char *dst, char *src);
 int				ft_isalnum(int c);
 int				ft_isalpha(int c);
 int				ft_isascii(int c);

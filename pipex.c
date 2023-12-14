@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:35:49 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/14 00:34:45 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/15 00:56:30 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 void	init_data(t_data *data, char **argv, int argc, char **envp)
 {
 	argv++;
+	data->status_code = 0;
 	if (!ft_strcmp(argv[0], "here_doc"))
 	{
 		data->here_doc = true;
@@ -60,24 +61,40 @@ void	child_process(t_data *data, int end[2], char **envp)
 {
 	dup2(end[1], STDOUT_FILENO);
 	close(end[0]);
+	close(end[1]);
+	if (access(data->cmdspath[data->iteration], X_OK) == -1)
+		data->status_code = 127;
 	if (execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp) == -1)
-	{
-		perror("Error");
-	}
+		data->status_code = 127;
+	free_all(data);
+	exit(0);
 }
 
 void	parent_process(int end[2])
 {
-	// wait(NULL);
-	dup2(end[0], STDIN_FILENO);
 	close(end[1]);
+	dup2(end[0], STDIN_FILENO);
+	close(end[0]);
 }
 
-void	parent_process_final(t_data *data, char **envp)
+void	final_exec(t_data *data, char **envp)
 {
-	dup2(data->fd_outfile, STDOUT_FILENO);
-	if (execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp) == -1)
-		perror("Error");
+	int		end[2];
+	pid_t	fork_id;
+
+	pipe(end);
+	fork_id = fork();
+	if (!fork_id)
+	{
+		dup2(data->fd_outfile, STDOUT_FILENO);
+		close(data->fd_outfile);
+		if (access(data->cmdspath[data->iteration], X_OK) == -1)
+			data->status_code = 127;
+		if (execve(data->cmdspath[data->iteration], data->cmds[data->iteration], envp) == -1)
+			data->status_code = 127;
+		free_all(data);
+		exit(0);
+	}
 }
 
 void	exec_pipex(t_data *data, char **envp)
@@ -95,38 +112,39 @@ void	exec_pipex(t_data *data, char **envp)
 	{
 		parent_process(end);
 	}
-	data->iteration = data->iteration + 1;
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	*data;
+	int		status_code;
 
 	if (argc > 4)
 	{
 		data = ft_calloc(sizeof(t_data), 1);
 		if (!data)
-			return (2);
+			exit (1);
 		init_data(data, argv, argc, envp);
 	}
 	else
-		return (2);
+		exit (1);
 	if (data->is_valid == false)
 	{
 		free_all(data);
-		return (2);
+		exit (1);
 	}
 	if (data->here_doc == false)
 	{
 		dup2(data->fd_infile, STDIN_FILENO);
+		close(data->fd_infile);
 		while (data->cmds[data->iteration + 1] != NULL)
+		{
 			exec_pipex(data, envp);
-		parent_process_final(data, envp);
+			data->iteration++;
+		}
+		final_exec(data, envp);
 	}
-	else
-	{
-
-	}
+	status_code = data->status_code;
 	free_all(data);
-	return (0);
+	return (status_code);
 }
