@@ -1,18 +1,16 @@
 SRC = \
 	./srcs/pipex.c \
 	./srcs/parsing.c \
-	./srcs/here_doc.c \
 	./srcs/pipex_utils.c \
-	./srcs/get_next_line.c \
 	./srcs/pipex_exec.c \
 
 BONUS = \
-	./srcs/bonus/pipex.c \
-	./srcs/bonus/parsing.c \
-	./srcs/bonus/here_doc.c \
-	./srcs/bonus/get_next_line.c \
-	./srcs/bonus/pipex_exec.c \
-	./srcs/bonus/pipex_utils.c \
+	./srcs/bonus/pipex_bonus.c \
+	./srcs/bonus/parsing_bonus.c \
+	./srcs/bonus/here_doc_bonus.c \
+	./srcs/bonus/get_next_line_bonus.c \
+	./srcs/bonus/pipex_exec_bonus.c \
+	./srcs/bonus/pipex_utils_bonus.c \
 
 OBJ = ${SRC:.c=.o}
 BOBJ = ${BONUS:.c=.o}
@@ -34,7 +32,6 @@ $(NAME): $(OBJ)
 	$(CC) $(OBJ) $(LIBS) -o $(NAME)
 
 bonus: $(BOBJ)
-	make fclean
 	make -C $(PRINTF)
 	mv $(PRINTF)/libftprintf.a .
 	$(CC) $(BOBJ) $(LIBS) -o $(NAME)
@@ -42,6 +39,7 @@ bonus: $(BOBJ)
 clean:
 	make clean -C $(PRINTF)
 	${RM} ${OBJ}
+	${RM} ${BOBJ}
 
 fclean: clean
 	make fclean -C $(PRINTF)

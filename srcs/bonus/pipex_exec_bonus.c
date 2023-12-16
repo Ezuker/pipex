@@ -1,21 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex_exec.c                                       :+:      :+:    :+:   */
+/*   pipex_exec_bonus.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/15 23:27:01 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/16 01:57:26 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/16 14:33:30 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/pipex.h"
+#include "../../includes/pipex_bonus.h"
 
 void	child_process(t_data *data, int end[2], char **envp)
 {
-	close(end[0]);
 	dup2(end[1], STDOUT_FILENO);
+	close(end[0]);
 	close(end[1]);
 	close(data->fd_outfile);
 	if (access(data->cpath[data->iter], X_OK) == -1)

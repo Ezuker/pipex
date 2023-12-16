@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:35:49 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/16 01:51:09 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/16 14:33:28 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/pipex.h"
+#include "../../includes/pipex_bonus.h"
 
 void	init_data(t_data *data, char **argv, int argc, char **envp)
 {
@@ -37,6 +37,7 @@ void	free_all(t_data *data)
 	int	j;
 
 	i = 0;
+	close(data->fd_outfile);
 	while (data->cmds && data->cmds[i] != NULL)
 	{
 		j = 0;

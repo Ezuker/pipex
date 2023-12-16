@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   pipex_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:36:19 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/16 14:35:12 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/16 14:31:03 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
+#ifndef PIPEX_BONUS_H
+# define PIPEX_BONUS_H
 
 # include <fcntl.h>
 # include "../ft_printf/ft_printf.h"
@@ -39,6 +39,7 @@ typedef struct s_data
 {
 	int		fd_infile;
 	int		fd_outfile;
+	t_bool	here_doc;
 	t_bool	is_valid;
 	char	***cmds;
 	char	**envpath;
@@ -46,6 +47,7 @@ typedef struct s_data
 	int		iter;
 	int		status_code;
 	t_pipex	pipex;
+	char	*limiter;
 }			t_data;
 
 char	*get_next_line(int fd, char *limiter);

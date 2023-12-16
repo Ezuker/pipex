@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 15:50:31 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/15 15:32:50 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/16 14:55:39 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ char	*addslash(char *s1, char *s2)
 		free(s2);
 	i = 0;
 	result = ft_calloc(sizeof(char), (ft_strlen(s1) + 2));
+	if (!result)
+		return (NULL);
 	while (i < (int)(ft_strlen(s1)))
 	{
 		result[i] = s1[i];

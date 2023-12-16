@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/15 23:27:01 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/15 23:35:06 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/16 14:02:26 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ void	child_process(t_data *data, int end[2], char **envp)
 	dup2(end[1], STDOUT_FILENO);
 	close(end[0]);
 	close(end[1]);
+	close(data->fd_outfile);
 	if (access(data->cpath[data->iter], X_OK) == -1)
 		data->status_code = 127;
 	execve(data->cpath[data->iter], data->cmds[data->iter], envp);

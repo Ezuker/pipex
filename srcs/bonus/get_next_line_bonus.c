@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 18:41:44 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/15 23:46:49 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/16 14:56:42 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/pipex.h"
+#include "../../includes/pipex_bonus.h"
 
 /**
  * @brief Extracts a substring from the input save string after the first \n.
@@ -135,9 +135,9 @@ char	*clean_line(char *save, char *limiter)
 	char	*result;
 
 	i = 0;
-	size = ft_strlen(save) - ft_strlen(limiter) - 1;
+	size = ft_strlen(save) - ft_strlen(limiter);
 	result = ft_calloc(size + 1, sizeof(1));
-	if (result == NULL)
+	if (!result)
 		return (NULL);
 	while (i < size)
 	{
@@ -163,7 +163,11 @@ char	*get_next_line(int fd, char *limiter)
 
 	line = NULL;
 	if (!save)
+	{
 		save = ft_calloc(1, 1);
+		if (!save)
+			return (NULL);
+	}
 	else if (save[0] == '\n')
 	{
 		save = get_save(save);
@@ -173,9 +177,8 @@ char	*get_next_line(int fd, char *limiter)
 		return (NULL);
 	save = get_line(save, fd, limiter);
 	if (save && ft_strlen(save) != 0)
-		line = clean_line(save, limiter);
-	else if (!line)
 	{
+		line = clean_line(save, limiter);
 		free(save);
 		save = NULL;
 	}
