@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:35:49 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/16 14:37:19 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/16 15:45:25 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int	main(int argc, char **argv, char **envp)
 
 	if (!*envp)
 		return (2);
-	if (argc > 4)
+	if (argc == 5)
 	{
 		data = ft_calloc(sizeof(t_data), 1);
 		if (!data)
