@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 15:40:18 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/16 14:52:08 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/16 15:00:18 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,6 @@ void	check_cmds_heredoc(t_data *data)
 void	parsing_heredoc(t_data *data, char **argv, int argc, char **envp)
 {
 	data->limiter = ft_strdup(argv[1]);
-	if (!data->limiter)
-		return (NULL);
 	open_heredoc(data, argv, argc);
 	argv++;
 	argv++;
