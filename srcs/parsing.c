@@ -6,11 +6,11 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 15:40:44 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/15 00:51:17 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/15 23:31:58 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "../includes/pipex.h"
 
 static int	open_files(t_data *data, char **argv, int argc)
 {
@@ -32,19 +32,19 @@ static int	open_files(t_data *data, char **argv, int argc)
 	return (1);
 }
 
-static int	init_cmds(t_data *data, char **argv, int argc)
+int	init_cmds(t_data *data, char **argv, int argc)
 {
 	int		i;
 
 	data->cmds = ft_calloc(sizeof(char **), argc - 2);
 	if (!data->cmds)
 		return (0);
-	data->cmdspath = ft_calloc(sizeof(char *), argc - 2);
-	if (!data->cmdspath)
+	data->cpath = ft_calloc(sizeof(char *), argc - 2);
+	if (!data->cpath)
 		return (0);
 	i = 0;
 	while (i < argc - 2)
-		data->cmdspath[i++] = NULL;
+		data->cpath[i++] = NULL;
 	i = 1;
 	while (i < argc - 2)
 	{
@@ -84,17 +84,17 @@ void	check_cmds(t_data *data)
 		j = -1;
 		while (data->envpath[++j] != NULL)
 		{
-			data->cmdspath[i] = addslash(data->envpath[j], data->cmdspath[i]);
-			data->cmdspath[i] = ft_strjoin(data->cmdspath[i], data->cmds[i][0]);
-			if (access(data->cmdspath[i], F_OK) != -1)
+			data->cpath[i] = addslash(data->envpath[j], data->cpath[i]);
+			data->cpath[i] = ft_strjoin(data->cpath[i], data->cmds[i][0]);
+			if (access(data->cpath[i], F_OK) != -1)
 				break ;
 			if (access(data->cmds[i][0], F_OK) != -1)
 			{
-				data->cmdspath[i] = ft_strcpy(data->cmdspath[i], data->cmds[i][0]);
+				data->cpath[i] = ft_strcpy(data->cpath[i], data->cmds[i][0]);
 				break ;
 			}
 		}
-		if (access(data->cmdspath[i], F_OK) == -1)
+		if (access(data->cpath[i], F_OK) == -1)
 		{
 			ft_printf("zsh: Command not found\n");
 			data->status_code = 127;

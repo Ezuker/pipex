@@ -8,7 +8,7 @@ SRC = \
 OBJ = ${SRC:.c=.o}
 CC = cc
 AR = ar -rcs
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 RM = rm -f
 NAME = libftprintf.a
 LIBFT = "./libft"

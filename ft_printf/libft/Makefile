@@ -35,6 +35,7 @@ SRC = \
 	ft_strmapi.c \
 	ft_striteri.c \
 	ft_strcpy.c \
+	ft_strstr.c \
 
 BONUS = \
 	ft_lstnew.c \
@@ -51,7 +52,7 @@ OBJ = ${SRC:.c=.o}
 BOBJ = ${BONUS:.c=.o}
 CC = cc
 AR = ar -rcs
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 RM = rm -f
 NAME = libft.a
 

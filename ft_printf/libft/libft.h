@@ -6,7 +6,7 @@
 /*   By: bcarolle <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 14:12:28 by bcarolle          #+#    #+#             */
-/*   Updated: 2023/12/14 21:31:35 by bcarolle         ###   ########.fr       */
+/*   Updated: 2023/12/15 15:49:58 by bcarolle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void			ft_bzero(void *s, size_t n);
 char			*ft_strdup(const char *s);
 void			*ft_calloc(size_t nmemb, size_t size);
 void			ft_striteri(char *s, void (*f)(unsigned int, char *));
+int				ft_strstr(char *s1, char *to_find);
 
 typedef struct s_list
 {
